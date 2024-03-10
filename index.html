@@ -1,3 +1,10 @@
+<!-- 
+@Author: Axel Galicia
+
+@Description: This project was created using the help of ChatGPT to create a prototype
+to display a list of bluetooth devices displaying an approximation of its distances.
+
+ -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,182 +13,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device Proximity Visualization</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --light-bg: #f4f4f4;
-            --dark-bg: #121212;
-            --light-text: #000;
-            --dark-text: #fff;
-            --primary-color: #007bff;
-            --hover-color: #0056b3;
-            --container-bg: #fff;
-            --tooltip-bg: lightgrey;
-            --line-color: #ddd;
-        }
+    <link href="css/style.css" rel="stylesheet">
 
-        [data-theme="dark"] {
-            --container-bg: #333;
-            --tooltip-bg: #444;
-            --line-color: #bbb;
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--light-bg);
-            color: var(--light-text);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 960px;
-            margin: 0 auto;
-        }
-
-        .filter-container,
-        .visualization-container,
-        .table-container {
-            background-color: var(--container-bg);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            width: 100%;
-            transition: background-color 0.3s;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid var(--line-color);
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        input,
-        button {
-            padding: 10px;
-            margin: 5px;
-            border: 1px solid var(--line-color);
-            border-radius: 5px;
-            background-color: var(--container-bg);
-            color: inherit;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            cursor: pointer;
-            border: none;
-        }
-
-        button:hover {
-            background-color: var(--hover-color);
-        }
-
-        .tooltip {
-            position: absolute;
-            visibility: hidden;
-            background-color: var(--tooltip-bg);
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid var(--line-color);
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        svg {
-            display: block;
-            margin: 0 auto;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            width: 100%;
-            height: auto;
-            max-width: 800px;
-            max-height: 600px;
-        }
-
-        .theme-switch-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .theme-switch {
-            display: inline-block;
-            height: 34px;
-            position: relative;
-            width: 60px;
-        }
-
-        .theme-switch input {
-            display: none;
-        }
-
-        .slider {
-            background-color: #ccc;
-            bottom: 0;
-            cursor: pointer;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            background-color: #fff;
-            bottom: 4px;
-            content: "";
-            height: 26px;
-            left: 4px;
-            position: absolute;
-            transition: .4s;
-            width: 26px;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: var(--primary-color);
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(26px);
-        }
-    </style>
 </head>
 
 <body data-theme="light">
-    <div class="theme-switch-wrapper">
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="darkModeToggle">
-            <div class="slider round"></div>
-        </label>
-        <em>Enable Dark Mode!</em>
-    </div>
+
     <div class="container">
+        <h2>Bluetooth Device's Distance</h2>
         <div class="filter-container">
-            <label>Refresh Frequency (seconds): </label>
-            <input type="number" id="refreshFrequency" value="5">
+            <label>Refresh Frequency (milliseconds): </label>
+            <input type="number" id="refreshFrequency" value="1000">
             <button onclick="setRefreshFrequency()">Set</button>
             <label>RSSI Filter: </label>
             <input type="number" id="rssiMin" placeholder="Min RSSI">
@@ -207,173 +49,8 @@
         </div>
     </div>
     <div class="tooltip" id="tooltip"></div>
-
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script>
-
-        // Theme toggling script
-        document.getElementById('darkModeToggle').addEventListener('change', function(event) {
-            console.log('change', event.target.checked)
-            document.body.setAttribute('data-theme', event.target.checked ? 'dark' : 'light');
-        });
-
-        document.getElementById('devicesWithName').addEventListener('change', function(event) {
-            updateFilters();
-        });
-
-        // Your JavaScript for WebSocket communication and D3 visualization goes here
-
-        const ws = new WebSocket('ws://localhost:5500');
-        const svg = d3.select('svg');
-        const width = +svg.attr('width');
-        const height = +svg.attr('height');
-        const center = { x: width / 2, y: height / 2 };
-        let devices = [];
-        let filteredDevices = [];
-        let refreshIntervalId;
-
-        const rssiScale = d3.scaleLinear().domain([-30, -100]).range([100, 250]);
-        const colorScale = d3.scaleSequential(d3.interpolateRdYlBu).domain([-30, -100]);
-        const sizeScale = d3.scaleLinear().domain([100, 0.1]).range([5, 30]); // Size based on RSSI
-
-        const tooltip = d3.select('#tooltip');
-
-        ws.onmessage = function(event) {
-            const device = JSON.parse(event.data);
-            const index = devices.findIndex(d => d.uuid === device.uuid);
-            if (index === -1) {
-                devices.push(device);
-            } else {
-                devices[index] = device;
-            }
-        };
-
-        function setRefreshFrequency() {
-            clearInterval(refreshIntervalId);
-            const frequency = document.getElementById('refreshFrequency').value;
-            refreshIntervalId = setInterval(() => {
-                updateFilters();
-            }, frequency * 1000);
-        }
-
-        function updateFilters() {
-            const rssiMin = document.getElementById('rssiMin').value || -100;
-            const rssiMax = document.getElementById('rssiMax').value || 0;
-            const deviceNameFilter = document.getElementById('deviceName').value.toLowerCase();
-            const devicesWithName = document.getElementById('devicesWithName').checked;
-
-            console.log({ devicesWithName });
-
-            filteredDevices = devices.filter(d =>
-                d.rssi >= rssiMin
-                && d.rssi <= rssiMax
-                && (!deviceNameFilter || (d.name && d.name.toLowerCase().includes(deviceNameFilter)))
-                && ((devicesWithName && d.name !== undefined) || (!devicesWithName && d.name === undefined)));
-
-            const sortedDevices = filteredDevices.sort((a, b) => b.rssi - a.rssi);
-            updateVisualization(sortedDevices);
-            updateTable(sortedDevices);
-        }
-
-        function updateVisualization(devices) {
-            svg.selectAll('circle,text,line').remove(); // Clear previous elements but keep the SVG
-
-            devices.forEach((device, i) => {
-                const angleInitial = (i * 2 * Math.PI / devices.length) - Math.PI / 2;
-                let angle = angleInitial;
-                const r = rssiScale(device.rssi);
-                const lineColor = colorScale(device.rssi);
-
-                function updatePosition() {
-                    angle += Math.random() * 0.1 - 0.005; // Slightly adjust angle for "floating" effect
-                    const x = center.x + Math.cos(angle) * r;
-                    const y = center.y + Math.sin(angle) * r;
-
-                    svg.select(`line[data-uuid="${device.uuid}"]`)
-                        .transition().duration(1000)
-                        .attr('x2', x)
-                        .attr('y2', y);
-
-                    svg.select(`circle[data-uuid="${device.uuid}"]`)
-                        .transition().duration(1000)
-                        .attr('cx', x)
-                        .attr('cy', y);
-
-                    svg.select(`text[data-uuid="${device.uuid}"]`)
-                        .transition().duration(1000)
-                        .attr('x', x)
-                        .attr('y', y + 4); // Adjust for visibility
-                }
-
-                svg.append('line')
-                    .attr('x1', center.x)
-                    .attr('y1', center.y)
-                    .attr('x2', center.x + Math.cos(angleInitial) * r)
-                    .attr('y2', center.y + Math.sin(angleInitial) * r)
-                    .attr('stroke', lineColor)
-                    .attr('data-uuid', device.uuid);
-
-                svg.append('circle')
-                    .attr('cx', center.x + Math.cos(angleInitial) * r)
-                    .attr('cy', center.y + Math.sin(angleInitial) * r)
-                    .attr('r', sizeScale(device.distance))
-                    .attr('fill', lineColor)
-                    .attr('data-uuid', device.uuid)
-                    .on('mouseover', function(event) {
-                        tooltip.style('visibility', 'visible').text(`${device.uuid}-${device.name}`);
-                    })
-                    .on('mousemove', function(event) {
-                        tooltip.style('top', (event.pageY - 10) + 'px').style('left', (event.pageX + 10) + 'px');
-                    })
-                    .on('mouseout', function() {
-                        tooltip.style('visibility', 'hidden');
-                    });
-
-                svg.append('text')
-                    .attr('x', center.x + Math.cos(angleInitial) * (r / 2))
-                    .attr('y', center.y + Math.sin(angleInitial) * (r / 2))
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('fill', 'black')
-                    .attr('font-size', '10px')
-                    .attr('data-uuid', device.uuid)
-                    .text(`${device.distance}m`);
-
-
-                svg.append('text')
-                    .attr('x', center.x + Math.cos(angleInitial) * r)
-                    .attr('y', center.y + Math.sin(angleInitial) * r + 4) // Slightly offset for visibility
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('fill', 'blue')
-                    .attr('font-size', '10px')
-                    .attr('data-uuid', device.uuid)
-                    .text(device.name || 'unknown');
-
-                // setInterval(updatePosition, 100); // Update position every second for each device
-            });
-        }
-
-        function updateTable(devices) {
-            const table = d3.select('#devicesTable');
-            table.selectAll('tr.device').remove(); // Clear previous rows
-
-            devices.forEach(device => {
-                const row = table.append('tr').attr('class', 'device');
-                row.append('td').text(device.name || 'Unknown');
-                row.append('td').text(device.rssi);
-                row.append('td').text(device.uuid);
-                row.append('td').text(device.distance);
-            });
-        }
-
-        // Functionality for setting refresh frequency, updating filters, and visualization updates
-        // goes here. This would include WebSocket communication logic, data processing, 
-        // and D3.js rendering logic as outlined in previous examples.
-
-        // Initialize with default frequency
-        setRefreshFrequency();
-    </script>
+    <script src="./js/d3.v7.min.js"></script>
+    <script src="./js/app.js"></script>
 </body>
 
 </html>

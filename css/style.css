@@ -1,0 +1,160 @@
+        :root {
+            --light-bg: #f4f4f4;
+            --dark-bg: #121212;
+            --light-text: #000;
+            --dark-text: #fff;
+            --primary-color: #007bff;
+            --hover-color: #0056b3;
+            --container-bg: #fff;
+            --tooltip-bg: lightgrey;
+            --line-color: #ddd;
+        }
+
+        [data-theme="dark"] {
+            --container-bg: #333;
+            --tooltip-bg: #444;
+            --line-color: #bbb;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .filter-container,
+        .visualization-container,
+        .table-container {
+            background-color: var(--container-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid var(--line-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid var(--line-color);
+            border-radius: 5px;
+            background-color: var(--container-bg);
+            color: inherit;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
+        }
+
+        .tooltip {
+            position: absolute;
+            visibility: hidden;
+            background-color: var(--tooltip-bg);
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid var(--line-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        svg {
+            display: block;
+            margin: 0 auto;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            width: 100%;
+            height: auto;
+            max-width: 800px;
+            max-height: 600px;
+        }
+
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
