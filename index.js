@@ -2,6 +2,7 @@ const WebSocket = require('ws');
 const noble = require('@abandonware/noble');
 const PORT = 5500;
 const TX_POWER = -65; // Adjust based on your device's specifics 1m from device
+const TICK_TIME_MS = 1000; // Sends update to clients every n ms
 
 // Initialize WebSocket server
 const wss = new WebSocket.Server({ port: PORT });
@@ -57,16 +58,15 @@ noble.on('discover', (peripheral) => {
 
 // Periodically send device information to all connected WebSocket clients
 setInterval(() => {
-    uniqueDevices.forEach((deviceInfo) => {
-        const dataToSend = JSON.stringify(deviceInfo);
+    const arrayOfDevicesInfo = Array.from(uniqueDevices, ([name, value]) => ({ ...value }));
+    const dataToSend = JSON.stringify(arrayOfDevicesInfo);
 
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN && client.bufferedAmount === 0) {
-                client.send(dataToSend);
-            }
-        });
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN && client.bufferedAmount === 0) {
+            client.send(dataToSend);
+        }
     });
-}, 20);
+}, TICK_TIME_MS);
 
 // Handle new WebSocket connections
 wss.on('connection', (client) => {

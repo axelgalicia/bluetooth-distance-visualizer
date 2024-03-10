@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@abandonware/noble": "^1.9.2-24",
+    "async": "^3.2.5",
     "ws": "^8.16.0"
   }
 }

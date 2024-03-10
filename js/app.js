@@ -2,8 +2,6 @@ document.getElementById('devicesWithName').addEventListener('change', function(e
     updateFilters();
 });
 
-// Your JavaScript for WebSocket communication and D3 visualization goes here
-
 const ws = new WebSocket('ws://localhost:5500');
 const svg = d3.select('svg');
 const width = +svg.attr('width');
@@ -14,23 +12,20 @@ let filteredDevices = [];
 let refreshIntervalId;
 
 const rssiScale = d3.scaleLinear().domain([-30, -100]).range([100, 250]);
-const colorScale = d3.scaleSequential(d3.interpolateRdYlBu).domain([-30, -100]);
-const sizeScale = d3.scaleLinear().domain([100, 0.1]).range([5, 30]); // Size based on RSSI
+const colorScale = d3.scaleSequential(d3.interpolateRdYlBu).domain([-50, -100]);
+const sizeScale = d3.scaleLinear().domain([100, 0.1]).range([-10, 35]); // Size based on RSSI
 
 const tooltip = d3.select('#tooltip');
 
 ws.onmessage = function(event) {
-    const device = JSON.parse(event.data);
-    const index = devices.findIndex(d => d.uuid === device.uuid);
-    if (index === -1) {
-        devices.push(device);
-    } else {
-        devices[index] = device;
+    devices = JSON.parse(event.data);
+    if (!Array.isArray(devices)) {
+        devices = [];
     }
 };
 
 ws.onclose = function(event) {
-    console.log('closeddd');
+    console.log('closed', event);
 }
 
 function setRefreshFrequency() {
@@ -159,10 +154,6 @@ function updateTable(devices) {
         row.append('td').text(device.distance);
     });
 }
-
-// Functionality for setting refresh frequency, updating filters, and visualization updates
-// goes here. This would include WebSocket communication logic, data processing, 
-// and D3.js rendering logic as outlined in previous examples.
 
 // Initialize with default frequency
 setRefreshFrequency();
