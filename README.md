@@ -5,10 +5,10 @@ This simple web app can approximate devices distances using Bluetooth RSSI infor
 A diagram is displayed in real-time showing the devices found distributed in a circle for easy view.
 
 ### Displaying devices with name
-![Screenshot one](https://github.com/axelgalicia/bluetooth-distance/img/screen-2.png)
+![Screenshot one](https://github.com/axelgalicia/bluetooth-distance/blob/master/img/screen-2.png)
 
 ### Displaying without name
-![Screenshot one](https://github.com/axelgalicia/bluetooth-distance/img/screen-1.png)
+![Screenshot one](https://github.com/axelgalicia/bluetooth-distance/blob/master/img/screen-1.png)
 
 ### How to start it
 
