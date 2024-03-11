@@ -1,4 +1,4 @@
-## Bluetooth Distance Meter
+## Bluetooth Distance Visualizer
 
 This simple web app can approximate devices distances using Bluetooth RSSI information.
 
