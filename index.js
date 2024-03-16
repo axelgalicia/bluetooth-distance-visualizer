@@ -1,8 +1,18 @@
 const WebSocket = require('ws');
 const noble = require('@abandonware/noble');
 const PORT = 5500;
-const TX_POWER = -65; // Adjust based on your device's specifics 1m from device
+const TX_POWER = -49; // Adjust based on your device's specifics 1m from device
 const TICK_TIME_MS = 1000; // Sends update to clients every n ms
+
+// Possible values for ENVIRONMENTAL_FACTOR
+// 2.0 in free space with no obstacles,
+// 2.7 to 3.5 in an urban area,
+// 3.0 to 5.0 in suburban areas,
+// 1.6 to 1.8 in a line-of-sight path (rarely used).
+
+const ENVIRONMENTAL_FACTOR = 2.7;
+
+
 
 // Initialize WebSocket server
 const wss = new WebSocket.Server({ port: PORT });
@@ -13,7 +23,7 @@ const uniqueDevices = new Map();
 
 // Calculate approximate distance from RSSI
 function calculateDistance(rssi) {
-    return Math.pow(10, (TX_POWER - rssi) / 20).toFixed(2);
+    return Math.pow(10, (TX_POWER - rssi) / (10 * ENVIRONMENTAL_FACTOR)).toFixed(2);
 }
 
 // Handle Noble state changes
